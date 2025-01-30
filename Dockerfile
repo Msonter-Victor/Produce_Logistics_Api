@@ -25,7 +25,7 @@ FROM openjdk:21
 WORKDIR /app
 
 # Copy the jar file from the build stage
-COPY --from=build /app/target/Benue_Produce_Logistics_Api.jar app.jar
+COPY --from=build ./target/*.jar app.jar
 
 # Run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]
