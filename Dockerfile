@@ -1,5 +1,5 @@
-# Stage 1: Build with Maven
-FROM maven:3.8.7 as build
+# Stage 1: Build with Maven and JDK 21
+FROM maven:3.8.7-openjdk-21 as build
 
 # Set the working directory
 WORKDIR /app
@@ -11,7 +11,7 @@ COPY src ./src
 # Run Maven build (without tests for faster builds)
 RUN mvn -B clean package -DskipTests
 
-# Stage 2: Run with OpenJDK
+# Stage 2: Run with OpenJDK 21
 FROM openjdk:21
 
 # Set the working directory
