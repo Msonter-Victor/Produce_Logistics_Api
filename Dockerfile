@@ -18,6 +18,9 @@ ENV JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
 # Run Maven build (without tests for faster builds)
 RUN mvn -B clean package -DskipTests
 
+# Debugging: List files in target directory to ensure the jar file is created
+RUN ls -la /app/target
+
 # Stage 2: Run with OpenJDK 21
 FROM openjdk:21
 
@@ -25,7 +28,7 @@ FROM openjdk:21
 WORKDIR /app
 
 # Copy the jar file from the build stage
-COPY --from=build ./target/*.jar app.jar
+COPY --from=build /app/target/*.jar app.jar
 
 # Run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]
