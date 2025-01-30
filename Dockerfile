@@ -1,5 +1,5 @@
 # Stage 1: Build with Maven and JDK 21
-FROM maven:3.8.7-openjdk-21 as build
+FROM maven:3.9-openjdk-21 as build
 
 # Set the working directory
 WORKDIR /app
