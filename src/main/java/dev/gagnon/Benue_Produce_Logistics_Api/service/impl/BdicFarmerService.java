@@ -45,7 +45,7 @@ public class BdicFarmerService implements FarmerService {
         Farmer farmer =  new Farmer();
         farmer.setBioData(user);
         farmerRepository.save(farmer);
-        sendMail(user);
+        //sendMail(user);
         RegistrationResponse response = new RegistrationResponse();
         response.setMessage("Successfully registered");
         return response;

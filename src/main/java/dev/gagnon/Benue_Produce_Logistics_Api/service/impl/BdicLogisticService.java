@@ -60,7 +60,7 @@ public class BdicLogisticService implements LogisticService {
         LogisticsProvider rider =  new LogisticsProvider();
         rider.setBioData(user);
         riderRepository.save(rider);
-        sendMail(user);
+        //sendMail(user);
         RegistrationResponse response = new RegistrationResponse();
         response.setMessage("Successfully registered");
         return response;
