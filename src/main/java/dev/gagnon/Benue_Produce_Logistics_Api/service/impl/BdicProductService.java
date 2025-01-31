@@ -50,6 +50,7 @@ public class BdicProductService implements ProductService {
 
         // Prepare response
         AddProductResponse response = new AddProductResponse();
+        response.setProductId(product.getId());
         response.setMessage("Successfully added product");
         return response;
     }

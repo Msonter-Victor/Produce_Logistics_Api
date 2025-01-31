@@ -32,8 +32,6 @@ public class MailConfig {
     @Value("${SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE}")
     private String startTlsEnable;
 
-    @Value("${SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_REQUIRED}")
-    private boolean starttlsRequired;
 
 
     @Bean
@@ -50,7 +48,7 @@ public class MailConfig {
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.smtp.auth", smtpAuth);
         props.put("mail.smtp.starttls.enable", startTlsEnable);
-        props.put("mail.smtp.starttls.required", starttlsRequired);
+        props.put("mail.smtp.starttls.required", true);
         return mailSender;
     }
 
