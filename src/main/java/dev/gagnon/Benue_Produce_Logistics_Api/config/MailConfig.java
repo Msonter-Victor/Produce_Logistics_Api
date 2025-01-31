@@ -12,29 +12,29 @@ import java.util.Properties;
 @Configuration
 @Getter
 public class MailConfig {
-    @Value("${spring.mail.host}")
+    @Value("${SPRING_MAIL_HOST}")
     private String host;
 
-    @Value("${spring.mail.port}")
+    @Value("${SPRING_MAIL_PORT}")
     private int port;
 
-    @Value("${spring.mail.username}")
+    @Value("${SPRING_MAIL_USERNAME}")
     private String username;
 
-    @Value("${spring.mail.password}")
+    @Value("${SPRING_MAIL_PASSWORD}")
     private String password;
 
-    @Value("${spring.mail.protocol}")
+    @Value("${SPRING_MAIL_PROTOCOL}")
     private String protocol;
-
-    @Value("${spring.mail.properties.mail.smtp.auth}")
+    @Value("${SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH}")
     private String smtpAuth;
 
-    @Value("${spring.mail.properties.mail.smtp.starttls.enable}")
+    @Value("${SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE}")
     private String startTlsEnable;
 
-    @Value("${spring.mail.test-connection}")
-    private String testConnection;
+    @Value("${SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_REQUIRED}")
+    private boolean starttlsRequired;
+
 
     @Bean
     public JavaMailSender javaMailSender() {
@@ -50,12 +50,7 @@ public class MailConfig {
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.smtp.auth", smtpAuth);
         props.put("mail.smtp.starttls.enable", startTlsEnable);
-        props.put("mail.smtp.connectiontimeout", "50000");
-        props.put("mail.smtp.timeout", "50000");
-
-        // Test connection
-        props.put("mail.test-connection", testConnection);
-
+        props.put("mail.smtp.starttls.required", starttlsRequired);
         return mailSender;
     }
 

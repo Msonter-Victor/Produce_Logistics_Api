@@ -9,5 +9,4 @@ public class SendMailRequest {
     private String recipientEmail;
     private String recipientName;
     private String content;
-    private String senderEmail;
 }

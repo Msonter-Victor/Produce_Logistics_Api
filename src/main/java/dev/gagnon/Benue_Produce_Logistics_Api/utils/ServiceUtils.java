@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class ServiceUtils {
-    private static final String SENDER_EMAIL = "benproduce@gmail.com";
+    public static final String SENDER_EMAIL = "benproduce@gmail.com";
     private static BioDataRepository userRepository;
     private static EmailSenderService emailSenderService;
 
@@ -89,7 +89,6 @@ public class ServiceUtils {
         SendMailRequest sendMailRequest = new SendMailRequest();
         sendMailRequest.setRecipientEmail(user.getEmail());
         sendMailRequest.setRecipientName(user.getFirstName());
-        sendMailRequest.setSenderEmail(SENDER_EMAIL);
         sendMailRequest.setContent(content);
         return sendMailRequest;
     }

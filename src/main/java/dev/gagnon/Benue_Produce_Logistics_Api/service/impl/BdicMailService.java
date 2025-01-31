@@ -10,15 +10,15 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import java.io.IOException;
 
+import static dev.gagnon.Benue_Produce_Logistics_Api.utils.ServiceUtils.SENDER_EMAIL;
+
 @Service
 public class BdicMailService implements EmailSenderService {
 
     private final JavaMailSender javaMailSender;
-    private final MailConfig mailConfig;
 
-    public BdicMailService(JavaMailSender javaMailSender, MailConfig mailConfig) {
+    public BdicMailService(JavaMailSender javaMailSender) {
         this.javaMailSender = javaMailSender;
-        this.mailConfig = mailConfig;
     }
 
     @Override
@@ -28,11 +28,11 @@ public class BdicMailService implements EmailSenderService {
             MimeMessageHelper helper = new MimeMessageHelper(message, true); // true for multipart
 
             // Set the from email dynamically or default to the one configured in MailConfig
-            String fromEmail = sendMailRequest.getSenderEmail();
-            helper.setFrom(fromEmail);
+
+            helper.setFrom(SENDER_EMAIL);
             helper.setTo(sendMailRequest.getRecipientEmail());
             helper.setSubject("Registration Confirmation");
-            helper.setText(sendMailRequest.getContent(), true); // true to send HTML content
+            helper.setText(sendMailRequest.getContent());
 
             // Send the email
             javaMailSender.send(message);
