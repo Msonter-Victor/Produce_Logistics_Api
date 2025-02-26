@@ -12,43 +12,51 @@ import java.util.Properties;
 @Configuration
 @Getter
 public class MailConfig {
-    @Value("${SPRING_MAIL_HOST}")
-    private String host;
+    @Value("${mail.host}")
+    private String mailHost;
 
-    @Value("${SPRING_MAIL_PORT}")
-    private int port;
+    @Value("${mail.port}")
+    private int mailPort;
 
-    @Value("${SPRING_MAIL_USERNAME}")
-    private String username;
+    @Value("${mail.username}")
+    private String mailUsername;
 
-    @Value("${SPRING_MAIL_PASSWORD}")
-    private String password;
+    @Value("${mail.password}")
+    private String mailPassword;
 
-    @Value("${SPRING_MAIL_PROTOCOL}")
-    private String protocol;
-    @Value("${SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH}")
+    @Value("${mail.protocol}")
+    private String mailProtocol;
+
+    @Value("${mail.properties.mail.smtp.auth}")
     private String smtpAuth;
 
-    @Value("${SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE}")
-    private String startTlsEnable;
+    @Value("${mail.properties.mail.smtp.ssl.enable}")
+    private String smtpSslEnable;
 
+    @Value("${mail.properties.mail.smtp.socketFactory.port}")
+    private String socketFactoryPort;
 
+    @Value("${mail.properties.mail.smtp.socketFactory.class}")
+    private String socketFactoryClass;
+    @Value("${mailgun.sender}")
+    @Getter
+    private String senderEmail;
 
     @Bean
     public JavaMailSender javaMailSender() {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+        mailSender.setHost(mailHost);
+        mailSender.setPort(mailPort);
+        mailSender.setUsername(mailUsername);
+        mailSender.setPassword(mailPassword);
 
-        mailSender.setHost(host);
-        mailSender.setPort(port);
-        mailSender.setUsername(username);
-        mailSender.setPassword(password);
-        mailSender.setProtocol(protocol);
-
-        // SMTP properties
         Properties props = mailSender.getJavaMailProperties();
+        props.put("mail.transport.protocol", mailProtocol);
         props.put("mail.smtp.auth", smtpAuth);
-        props.put("mail.smtp.starttls.enable", startTlsEnable);
-        props.put("mail.smtp.starttls.required", true);
+        props.put("mail.smtp.ssl.enable", smtpSslEnable);
+        props.put("mail.smtp.socketFactory.port", socketFactoryPort);
+        props.put("mail.smtp.socketFactory.class", socketFactoryClass);
+
         return mailSender;
     }
 
