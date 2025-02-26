@@ -12,10 +12,7 @@ import dev.gagnon.Benue_Produce_Logistics_Api.dto.response.RiderResponse;
 import dev.gagnon.Benue_Produce_Logistics_Api.dto.response.UpdateLocationResponse;
 import dev.gagnon.Benue_Produce_Logistics_Api.exception.RideNotFoundException;
 import dev.gagnon.Benue_Produce_Logistics_Api.exception.UserNotFoundException;
-import dev.gagnon.Benue_Produce_Logistics_Api.service.BuyerService;
-import dev.gagnon.Benue_Produce_Logistics_Api.service.LogisticService;
-import dev.gagnon.Benue_Produce_Logistics_Api.service.NotificationService;
-import dev.gagnon.Benue_Produce_Logistics_Api.service.OrderService;
+import dev.gagnon.Benue_Produce_Logistics_Api.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -39,7 +36,7 @@ public class BdicLogisticService implements LogisticService {
     private final RideRepository rideRepository;
     private final NotificationService notificationService;
 
-    public BdicLogisticService(LogisticRiderRepository riderRepository, MapperConfig mapperConfig, BioDataRepository bioDataRepository, PasswordEncoder passwordEncoder, BuyerService buyerService, OrderService orderService, RideRepository rideRepository, NotificationService notificationService) {
+    public BdicLogisticService(LogisticRiderRepository riderRepository, MapperConfig mapperConfig, BioDataRepository bioDataRepository, PasswordEncoder passwordEncoder, BuyerService buyerService, OrderService orderService, RideRepository rideRepository, NotificationService notificationService, EmailSenderService emailService) {
         this.riderRepository = riderRepository;
         this.mapperConfig = mapperConfig;
         this.userRepository = bioDataRepository;
@@ -60,7 +57,7 @@ public class BdicLogisticService implements LogisticService {
         LogisticsProvider rider =  new LogisticsProvider();
         rider.setBioData(user);
         riderRepository.save(rider);
-        //sendMail(user);
+        sendMail(user);
         RegistrationResponse response = new RegistrationResponse();
         response.setMessage("Successfully registered");
         return response;

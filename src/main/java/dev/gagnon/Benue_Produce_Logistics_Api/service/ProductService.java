@@ -19,4 +19,6 @@ public interface ProductService {
     Product getProductById(UUID productId);
 
     void saveProduct(Product product);
+
+    List<ProductResponse> findFarmerProducts(String email);
 }

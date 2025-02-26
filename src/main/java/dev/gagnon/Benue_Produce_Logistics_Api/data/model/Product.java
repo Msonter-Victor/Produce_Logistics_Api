@@ -20,7 +20,7 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
-    private BigDecimal price;
+    private Long unitPrice;
     private String productName;
     private String description;
     private Long stock;

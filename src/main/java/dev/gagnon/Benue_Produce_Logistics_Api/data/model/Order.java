@@ -23,12 +23,14 @@ public class Order {
     @JoinColumn(name = "buyer_id", nullable = false)
     private Buyer buyer;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "farmer_id", nullable = false)
+    private Farmer farmer;
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> items = new ArrayList<>();
 
 
-    @OneToMany(fetch = FetchType.EAGER)
-    private List<Product> product;
 
 
 }

@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -87,21 +89,32 @@ public class ServiceUtils {
 
     private static SendMailRequest buildMailRequest(BioData user, String content) {
         SendMailRequest sendMailRequest = new SendMailRequest();
-        sendMailRequest.setRecipientEmail(user.getEmail());
-        sendMailRequest.setRecipientName(user.getFirstName());
+        sendMailRequest.setSendTo(user.getEmail());
+        sendMailRequest.setSubject("Successful Registration");
         sendMailRequest.setContent(content);
         return sendMailRequest;
     }
 
 
 
+
+
     private static String buildConfirmationEmail(String name) {
-        return "<p>Hello " + name + ",</p>"
-                + "<p>Thank you for registering with Benue State Produce and Logistics Services.</p>"
-                + "<p>We are happy to have you onboard</p>"
-                + "<p>If you did not register, please ignore this email.</p>"
-                + "<p>Regards</p>"
-                + "<p>Benue State Produce and Logistics Services.</p>";
+        try {
+            InputStream inputStream = ServiceUtils.class.getClassLoader()
+                    .getResourceAsStream("templates/welcome-email.html");
+            if (inputStream == null) {
+                throw new IOException("Email template not found");
+            }
+            String template = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+            return String.format(template, name);
+        } catch (IOException e) {
+            log.error("Failed to load email template", e);
+            // Fallback content
+            return "<h3>Welcome " + name + "</h3>" +
+                    "<p>Thank you for registering!</p>" +
+                    "<div><p>Regards,<br/>Benue Produce Team</p></div>";
+        }
     }
 
 }

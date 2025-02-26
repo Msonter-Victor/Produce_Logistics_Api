@@ -14,7 +14,7 @@ import java.util.List;
 public class AddProductRequest {
     private String productName;
     private Long stock;
-    private BigDecimal price;
+    private Long unitPrice;
     private String description;
     private List<MultipartFile> images;
 

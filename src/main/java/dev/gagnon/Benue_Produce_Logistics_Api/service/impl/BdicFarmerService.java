@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.UUID;
 
 import static dev.gagnon.Benue_Produce_Logistics_Api.utils.ServiceUtils.sendMail;
 import static dev.gagnon.Benue_Produce_Logistics_Api.utils.ServiceUtils.validateDetails;
@@ -45,7 +46,7 @@ public class BdicFarmerService implements FarmerService {
         Farmer farmer =  new Farmer();
         farmer.setBioData(user);
         farmerRepository.save(farmer);
-        //sendMail(user);
+        sendMail(user);
         RegistrationResponse response = new RegistrationResponse();
         response.setMessage("Successfully registered");
         return response;
@@ -55,5 +56,11 @@ public class BdicFarmerService implements FarmerService {
     public FarmerResponse findByEmail(String email) {
         Farmer farmer = farmerRepository.findByEmail(email).orElseThrow(()->new UserNotFoundException("User not found with email: " + email));
         return new FarmerResponse(farmer);
+    }
+
+    @Override
+    public Farmer findById(UUID farmerId) {
+        return farmerRepository.findById(farmerId)
+                .orElseThrow(()->new UserNotFoundException("User not found with id: " + farmerId));
     }
 }

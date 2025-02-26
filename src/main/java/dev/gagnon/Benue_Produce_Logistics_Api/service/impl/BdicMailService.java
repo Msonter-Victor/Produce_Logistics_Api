@@ -1,45 +1,48 @@
 package dev.gagnon.Benue_Produce_Logistics_Api.service.impl;
 
-import dev.gagnon.Benue_Produce_Logistics_Api.config.MailConfig;
 import dev.gagnon.Benue_Produce_Logistics_Api.dto.request.SendMailRequest;
 import dev.gagnon.Benue_Produce_Logistics_Api.service.EmailSenderService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import java.io.IOException;
-
-import static dev.gagnon.Benue_Produce_Logistics_Api.utils.ServiceUtils.SENDER_EMAIL;
 
 @Service
 public class BdicMailService implements EmailSenderService {
 
     private final JavaMailSender javaMailSender;
+    @Value("${SPRING_MAIL_USERNAME}")
+    private String username;
 
     public BdicMailService(JavaMailSender javaMailSender) {
         this.javaMailSender = javaMailSender;
     }
 
     @Override
-    public String sendEmail(SendMailRequest sendMailRequest) throws IOException {
+    public void sendEmail(SendMailRequest mailRequest) {
+
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, "UTF-8");
+
         try {
-            MimeMessage message = javaMailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true); // true for multipart
 
-            // Set the from email dynamically or default to the one configured in MailConfig
+            mimeMessageHelper.setTo(mailRequest.getSendTo());
+            mimeMessageHelper.setSubject(mailRequest.getSubject());
+            mimeMessageHelper.setFrom(this.username);
+            mimeMessageHelper.setText(mailRequest.getContent(), true);
 
-            helper.setFrom(SENDER_EMAIL);
-            helper.setTo(sendMailRequest.getRecipientEmail());
-            helper.setSubject("Registration Confirmation");
-            helper.setText(sendMailRequest.getContent());
+            new Thread(() -> {
 
-            // Send the email
-            javaMailSender.send(message);
+                System.out.println("Sending mail...");
+                javaMailSender.send(mimeMessage);
+                System.out.println("Mail sent successfully...");
+            }).start();
 
-            return "Mail sent successfully";
         } catch (MessagingException e) {
-            throw new RuntimeException("Failed to send email", e);
+            throw new RuntimeException(e);
         }
+
     }
 }

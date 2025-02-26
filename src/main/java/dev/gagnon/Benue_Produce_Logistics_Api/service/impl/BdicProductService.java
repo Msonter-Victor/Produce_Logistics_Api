@@ -40,15 +40,15 @@ public class BdicProductService implements ProductService {
     public AddProductResponse addProduct(AddProductRequest request, String email) {
         // Map request to Product entity
         Product product = mapperConfig.toProduct(request);
+        product.setUnitPrice(request.getUnitPrice());
         Farmer user = farmerRepository.findByEmail(email).
                 orElseThrow(()->new ProductNotFoundException(email));
         Uploader uploader = cloudinary.uploader();
         product.setFarmer(user);
         List<String> mediaUrls = getMediaUrls(request.getImages(), uploader);
-        product.setImageUrls(mediaUrls); // Set image URLs
+        product.setImageUrls(mediaUrls);
         productRepository.save(product);
 
-        // Prepare response
         AddProductResponse response = new AddProductResponse();
         response.setProductId(product.getId());
         response.setMessage("Successfully added product");
@@ -83,6 +83,12 @@ public class BdicProductService implements ProductService {
     public void saveProduct(Product product) {
         productRepository.save(product);
     }
+
+    @Override
+    public List<ProductResponse> findFarmerProducts(String email) {
+        List<Product> products = productRepository.findByFarmer(email);
+        return products.stream().map(
+                ProductResponse::new).toList();    }
 
     @Override
     public Product getProductById(UUID productId) {

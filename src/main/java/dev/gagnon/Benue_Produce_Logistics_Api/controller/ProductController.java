@@ -2,6 +2,7 @@ package dev.gagnon.Benue_Produce_Logistics_Api.controller;
 
 
 import dev.gagnon.Benue_Produce_Logistics_Api.dto.request.AddProductRequest;
+import dev.gagnon.Benue_Produce_Logistics_Api.dto.response.ProductResponse;
 import dev.gagnon.Benue_Produce_Logistics_Api.exception.BdicBaseException;
 import dev.gagnon.Benue_Produce_Logistics_Api.service.ProductService;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
 import java.util.UUID;
 
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
@@ -66,4 +68,15 @@ public class ProductController {
         }
     }
 
+    @GetMapping("/farmerProducts")
+    public ResponseEntity<?> getFarmerProducts(Principal principal) {
+        try{
+            String email = principal.getName();
+            List<ProductResponse> products =  productService.findFarmerProducts(email);
+            return new ResponseEntity<>(products, HttpStatus.OK);
+        }
+        catch (BdicBaseException exception){
+            return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
 }

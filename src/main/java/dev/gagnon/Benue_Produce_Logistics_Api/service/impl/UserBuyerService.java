@@ -2,14 +2,20 @@ package dev.gagnon.Benue_Produce_Logistics_Api.service.impl;
 
 
 import dev.gagnon.Benue_Produce_Logistics_Api.config.MapperConfig;
+import dev.gagnon.Benue_Produce_Logistics_Api.data.model.AccountDetails;
 import dev.gagnon.Benue_Produce_Logistics_Api.data.model.BioData;
 import dev.gagnon.Benue_Produce_Logistics_Api.data.model.Buyer;
+import dev.gagnon.Benue_Produce_Logistics_Api.data.repository.AccountDetailsRepository;
 import dev.gagnon.Benue_Produce_Logistics_Api.data.repository.BioDataRepository;
 import dev.gagnon.Benue_Produce_Logistics_Api.data.repository.BuyerRepository;
+import dev.gagnon.Benue_Produce_Logistics_Api.dto.request.AddAccountDetailsRequest;
 import dev.gagnon.Benue_Produce_Logistics_Api.dto.request.RegisterRequest;
+import dev.gagnon.Benue_Produce_Logistics_Api.dto.response.AddAccountDetailsResponse;
 import dev.gagnon.Benue_Produce_Logistics_Api.dto.response.RegistrationResponse;
+import dev.gagnon.Benue_Produce_Logistics_Api.exception.InvalidDataException;
 import dev.gagnon.Benue_Produce_Logistics_Api.exception.UserNotFoundException;
 import dev.gagnon.Benue_Produce_Logistics_Api.service.BuyerService;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +24,7 @@ import java.util.UUID;
 
 import static dev.gagnon.Benue_Produce_Logistics_Api.utils.ServiceUtils.sendMail;
 import static dev.gagnon.Benue_Produce_Logistics_Api.utils.ServiceUtils.validateDetails;
+import static java.time.LocalDateTime.now;
 
 
 @Service
@@ -26,12 +33,16 @@ public class UserBuyerService implements BuyerService {
     private final BioDataRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final BuyerRepository buyerRepository;
+    private final ModelMapper modelMapper;
+    private final AccountDetailsRepository accountDetailsRepository;
 
-    public UserBuyerService(MapperConfig mapperConfig, BioDataRepository userRepository, PasswordEncoder passwordEncoder, BuyerRepository buyerRepository) {
+    public UserBuyerService(MapperConfig mapperConfig, BioDataRepository userRepository, PasswordEncoder passwordEncoder, BuyerRepository buyerRepository, ModelMapper modelMapper, AccountDetailsRepository accountDetailsRepository) {
         this.mapperConfig = mapperConfig;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.buyerRepository = buyerRepository;
+        this.modelMapper = modelMapper;
+        this.accountDetailsRepository = accountDetailsRepository;
     }
 
     @Override
@@ -44,7 +55,7 @@ public class UserBuyerService implements BuyerService {
         Buyer buyer =  new Buyer();
         buyer.setBioData(user);
         buyerRepository.save(buyer);
-        //sendMail(user);
+        sendMail(user);
         // Prepare response
         RegistrationResponse response = new RegistrationResponse();
         response.setMessage("Successfully registered");
@@ -61,5 +72,23 @@ public class UserBuyerService implements BuyerService {
     public Buyer findById(UUID buyerId) {
         return buyerRepository.findById(buyerId)
                 .orElseThrow(()->new UserNotFoundException("user not found"));
+    }
+
+    @Override
+    public AddAccountDetailsResponse addAccountDetails(AddAccountDetailsRequest request,String email) {
+        validate(request.getAccountNumber());
+        Buyer buyer = findByEmail(email);
+        AccountDetails newAccountDetails = modelMapper.map(request, AccountDetails.class);
+        newAccountDetails.setBuyer(buyer);
+        newAccountDetails = accountDetailsRepository.save(newAccountDetails);
+        AddAccountDetailsResponse response = modelMapper.map(newAccountDetails, AddAccountDetailsResponse.class);
+        response.setId(buyer.getId());
+        response.setResponseTime(now());
+        return response;
+    }
+
+    private void validate(String accountNumber) {
+        String regex = "\\d{10}";
+        if (!accountNumber.matches(regex)) throw new InvalidDataException("Invalid account number");
     }
 }
